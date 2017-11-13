@@ -1,0 +1,50 @@
+Length: Approximately 3000 words
+Maximum No. of Pages: 6
+
+Note: There should be a general flow / layout to these sort of article that becomes clear relatively after reading far too many of them. I'll look into that.
+
+Hacking the 40% from the report the main concerns are:
+- Satisfy the main points outlined in the requirement (see below report section notes)
+- Construct an argument regarding the originality of the implemented system
+- Compare and contrast against related work
+	- Present the past and current state of the field and justify what our system brings to the table
+- Perform a quantitative evaluation against similar systems / non-distributed web crawlers
+	- Another compare and contrast discussion point
+
+Some key ideas regarding the different sections of the report
+
+Abstract
+- It's an abstract
+
+Introduction / Motivation 
+- Summarise the subject matter history and current state of affairs 
+- Justify our system and its originality
+
+System Design
+- Diagrams and figures are allowed (use them for clarity)
+- Justify design decision
+- Discuss restrictions of the system
+- Can justify originality and compare against similar systems here also
+
+Implementation
+- Discuss implementing the project
+- Feel free to mention features which were cut
+- Explain how some of the system design features were tackled
+- There should be a clear connection between the System Design and Implementation section
+- That is present the idea in the system design and discuss it in detail in the implementation
+
+Evaluation
+- Compare against other systems (other distributed web crawlers / non-distributed web crawlers)
+- Discuss the comparison of our system against some other system 
+- Performance statistics
+- Quantitative evidence that the system works
+- Stats and graphs for visualisation
+
+Related Work
+- Critique related work, highlighting the most significant contributions
+- Compare and contrast existing work against our system
+- Through comparison with existing work highlight and justify our system - its accomplishments and originality
+- Agian justify and renforce the original aspect of our system
+
+Conclusions
+- Summarise, present future work and renforce the key idea behind our system
