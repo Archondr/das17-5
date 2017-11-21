@@ -1,0 +1,28 @@
+Papers & Surveys
+
+Distributed Web Crawling Over Distributed Hash Tables
+https://pdfs.semanticscholar.org/aa31/90325d3755367717978967af1c4fed42dce2.pdf
+
+Design and Implementation of a High-Performance Distributed Web Crawler
+http://engineering.nyu.edu/~suel/papers/crawl.pdf
+
+A Scalable, Distributed Web-Crawler
+https://pdfs.semanticscholar.org/5898/c16ff46dff2bc5f01bc5a900ecc4664ff571.pdf
+
+A Brief History of Web Crawlers
+http://ssrg.eecs.uottawa.ca/docs/CASCON2013.pdf
+
+Web Crawler: A Review
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.278.7448&rep=rep1&type=pdf
+
+Focused Web Crawler and its Approaches
+http://inpressco.com/wp-content/uploads/2014/09/Paper53121-31241.pdf
+
+General Web Crawling Survey
+http://infolab.stanford.edu/~olston/publications/crawling_survey.pdf
+
+
+Presentations
+
+Dist-RIA Crawler: A Distributed Crawler for Rich Internet Applications
+http://ssrg.site.uottawa.ca/docs/Distributed_RIA_crawling.pdf

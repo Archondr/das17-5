@@ -1,0 +1,36 @@
+Abstract (200 word limit)
+Summarise the novelty of our system and the problem that it solves. Expand by summarising how this provides a greater contribution as a whole.
+
+
+Introduction (and motivation)
+The problem of web crawling is a longstanding and significant subject, and one which continues to increase in complexity and importance as the World Wide Web continues its rapid expansion and growth.
+
+Where early web crawlers merely collected statistics such as measuring the size of the web, modern web crawlers must also provide content indexing, for use in search engines, in addition to their use of performing automated testing and model checking for the web application and providing automated security checks and vulnerability assessment. 
+
+Although used for a variety of tasks, the most prominent use of a web crawler is its integral role within web search engines where the crawler must recursively crawl, index and update the search engine database with newly discovered web pages as it assembles the search engine's database. This index allows the search engine to accept user queries and find all of the web pages which match the user's query.  
+
+Despite the simplicity involved in creating a simple web crawling algorithm, the task of web crawling faces many significant challenges:
+
+First is problem of scale, where the crawlers are faced by the challenge of the large and continually evolving web as they attempt to achieve a broad coverage and good measure of content freshness whilst simultaneously achieveing a high throughpout.
+
+Secondly one must consider potential content selection tradeoffs and balancing. Rather than attempt to crawl the entire web the crawling is targeted and guided to achieve a higher quality of content discovered. Modern web crawlers must balance between the desire to attain broad coverage and good freshness whilst also obey constraints to guide their focus. Additionally the balance between exploring potentially useful content and resuing content that is already known to be useful must be achieved.
+
+Thirdly are the social and ethical obligations which web crawlers must follow. The web crawlers should not strain or burden the web sites which they crawl.
+
+Fourthly is the concern of antagonistic content providers who seek to abuse and mislead the web crawler to plant misleading or harmful content into the database assembled by the web crawlers. The crawler must be able to detect and prevent such information from entering the assembled collection of web pages.
+
+Section Plan:
+- Summarise briefly web crawlers
+- Discuss the challenges faced by web crawlers
+- Summarise how web crawlers have changed over time from the traditional method to the deep-web crawlers to modern state of the art methods
+- Transition from that into the importance of a distributed web crawler and summarise the benefits it brings (state of the art distributed web crawler)
+- From there discuss the problem we are attempting to tackle
+- End with the justification of why our system is of value in solving the aforementioned problem
+
+TEMP NOTES:
+Objectives: Find all (or ‘important’) pages | Find connections between the pages (page ranking and obtaining a complete model of the application)
+
+3 Types of Crawlers:
+	1. Traditional Crawlers: Every URL is mapped to a single state with crawling being to find all the URLs
+	2. Deep-web Crawling: HTML forms are used to access data with crawling involving assigning of values to open fields
+	3. RIA web crawling: Client side events are used to modify the DOM with crawling involving executing all events in each state
