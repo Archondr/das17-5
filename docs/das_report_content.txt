@@ -32,12 +32,13 @@ Thirdly are the social and ethical obligations which web crawlers must follow. T
 
 Fourthly is the concern of antagonistic content providers who seek to abuse and mislead the web crawler to plant misleading or harmful content into the database assembled by the web crawlers. The crawler must be able to detect and prevent such information from entering the assembled collection of web pages.
 
+Due to the growing size of the web and the timely need of recrawling past content, distributed web crawling is used to parallelize the web crawling process. The advantage of the distributed model by harnessing a large number of nodes vastly improves the throughput in addition to providing greater scalability than a traditional centralised system. Furthermore such systems may allow users to voluntarily offer their own computing resources towards the web crawling process. Through spreading the load of this tasks across multiple computers reduces the costs which would be otherwise spent on maintaining large computing clusters.
 
 Section Plan:
 + Summarise briefly web crawlers
 + Discuss the challenges faced by web crawlers
 + Summarise how web crawlers have changed over time from the traditional method to the deep-web crawlers to modern state of the art methods
-- Transition from that into the importance of a distributed web crawler and summarise the benefits it brings (state of the art distributed web crawler)
++ Transition from that into the importance of a distributed web crawler and summarise the benefits it brings (state of the art distributed web crawler)
 - From there discuss the problem we are attempting to tackle
 - End with the justification of why our system is of value in solving the aforementioned problem
 
