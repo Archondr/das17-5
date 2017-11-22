@@ -3,26 +3,40 @@ Summarise the novelty of our system and the problem that it solves. Expand by su
 
 
 Introduction (and motivation)
+
+[ ** Some of this content will be cut, summarise or reused in later sections of the report ** ]
+
+ ** What is web crawling and why is it important **
 The problem of web crawling is a longstanding and significant subject, and one which continues to increase in complexity and importance as the World Wide Web continues its rapid expansion and growth.
 
+** What is the purpose of a web crawler **
 Where early web crawlers merely collected statistics such as measuring the size of the web, modern web crawlers must also provide content indexing, for use in search engines, in addition to their use of performing automated testing and model checking for the web application and providing automated security checks and vulnerability assessment. 
 
 Although used for a variety of tasks, the most prominent use of a web crawler is its integral role within web search engines where the crawler must recursively crawl, index and update the search engine database with newly discovered web pages as it assembles the search engine's database. This index allows the search engine to accept user queries and find all of the web pages which match the user's query.  
 
+** Web crawler history **
+The traditional definition of the web crawlers assumes that all of the content is mapped to a single state and is reachable through URLs. The additional complexities added by the rise of interactive web applications introduced complexity with web application often acting as an interface to a database which the user interacts with to retrieve its content. Deep Web-Crawling was introduced to discover the hidden content behind such search interface on the web by performing a focused, extensive search on a given domain. As the web continued to evolve, new technologies such as HTML5 and AJAX saw the rise of a new pattern in designing web applications, Rich Internet Applications (RIA), which move part of the computation from the server side onto the client. In an RIA events occur in response to user interaction which changes the client side state of the web application, represented as a change of a Document Object Model (DOM). The state change in the DOM does not guarantee a change of URL hence such changes are invisible to the traditional model of web crawlers. The recent topic of RIA web-crawling aims to provide strategies to tackle of RIA crawling.
+
+** How do web crawlers work **
+The behaviour of a web crawler results from a combination of the following policies. A selection policy states which pages to download with a revisit policy outlining when to check for changes to past pages. A politeness policy must be in place to avoid overloading web sites and should the web crawler be distributed then a parallelization policy must coordinate the distributed web crawlers.
+
+** What are the challenges of web crawlers **
+[ *** Probably summarise the challenges section *** ]
 Despite the simplicity involved in creating a simple web crawling algorithm, the task of web crawling faces many significant challenges:
 
-First is problem of scale, where the crawlers are faced by the challenge of the large and continually evolving web as they attempt to achieve a broad coverage and good measure of content freshness whilst simultaneously achieveing a high throughpout.
+First is problem of scale, where the crawlers are faced by the challenge of the large and continually evolving web as they attempt to achieve a broad coverage and good measure of content freshness whilst simultaneously achieving a high throughput.
 
-Secondly one must consider potential content selection tradeoffs and balancing. Rather than attempt to crawl the entire web the crawling is targeted and guided to achieve a higher quality of content discovered. Modern web crawlers must balance between the desire to attain broad coverage and good freshness whilst also obey constraints to guide their focus. Additionally the balance between exploring potentially useful content and resuing content that is already known to be useful must be achieved.
+Secondly one must consider potential content selection tradeoffs and balancing. Rather than attempt to crawl the entire web the crawling is targeted and guided to achieve a higher quality of content discovered. Modern web crawlers must balance between the desire to attain broad coverage and good freshness whilst also obey constraints to guide their focus. Additionally the balance between exploring potentially useful content and reusing content that is already known to be useful must be achieved.
 
-Thirdly are the social and ethical obligations which web crawlers must follow. The web crawlers should not strain or burden the web sites which they crawl.
+Thirdly are the social and ethical obligations which web crawlers must follow. The web crawlers should not strain or burden the web sites which they crawl by adopting a politeness policy.
 
 Fourthly is the concern of antagonistic content providers who seek to abuse and mislead the web crawler to plant misleading or harmful content into the database assembled by the web crawlers. The crawler must be able to detect and prevent such information from entering the assembled collection of web pages.
 
+
 Section Plan:
-- Summarise briefly web crawlers
-- Discuss the challenges faced by web crawlers
-- Summarise how web crawlers have changed over time from the traditional method to the deep-web crawlers to modern state of the art methods
++ Summarise briefly web crawlers
++ Discuss the challenges faced by web crawlers
++ Summarise how web crawlers have changed over time from the traditional method to the deep-web crawlers to modern state of the art methods
 - Transition from that into the importance of a distributed web crawler and summarise the benefits it brings (state of the art distributed web crawler)
 - From there discuss the problem we are attempting to tackle
 - End with the justification of why our system is of value in solving the aforementioned problem
