@@ -21,6 +21,9 @@ http://inpressco.com/wp-content/uploads/2014/09/Paper53121-31241.pdf
 General Web Crawling Survey
 http://infolab.stanford.edu/~olston/publications/crawling_survey.pdf
 
+Deep Web Crawler: Exploring and Re-ranking of Web Forms
+https://pdfs.semanticscholar.org/c9ba/f200e431e78a5df025156aa9f16790defc80.pdf
+
 
 Presentations
 
