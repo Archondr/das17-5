@@ -13,6 +13,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private HashSet<String> crawled = new HashSet<>();
     private Queue<String> queue = new LinkedList<>();
 
+
     public Server() throws RemoteException {
         super();
         String seedUrl = "https://www.google.co.uk";
@@ -28,11 +29,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return queue.poll();
     }
 
-    public synchronized void putUrl(String url) {
-        if (!crawled.contains(url)) {
-            crawled.add(url);
-            queue.add(url);
-        }
+    public synchronized void putUrls(Iterable<String> urls) {
+        urls.forEach(url -> {
+            if (!crawled.contains(url)) {
+                crawled.add(url);
+                queue.add(url);
+            }
+        });
     }
 
     public synchronized void printUrls() {
