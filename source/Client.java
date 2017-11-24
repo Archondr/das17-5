@@ -22,7 +22,7 @@ public class Client {
                 URL urlToCrawl = new URL(url);
                 List<URL> foundUrls = Crawler.crawl(urlToCrawl, 20);
                 Iterable<String> urlStrings = foundUrls.stream().map(Object::toString).collect(Collectors.toList());
-                stub.putUrls(urlStrings);
+                stub.putUrls(url, urlStrings);
                 url = stub.getUrl();
             }
         } catch (Exception e) {
