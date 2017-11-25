@@ -11,23 +11,28 @@ public class Client {
     public static void main(String[] args) {
 
         String host = "localhost";
+
+        if(args[0] != null){
+            host = args[0];
+        }
+
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerInterface stub = (ServerInterface) registry.lookup("Server");
-            String response = stub.sayHello();
-            System.out.println("response: " + response);
+            ServerInterface stub = (ServerInterface) registry.lookup("CrawlerServer");
 
             String url = stub.getUrl();
             for (int i = 0; i < 20 && url != null; ++i) {
+
                 URL urlToCrawl = new URL(url);
                 List<URL> foundUrls = Crawler.crawl(urlToCrawl, 20);
                 Iterable<String> urlStrings = foundUrls.stream().map(Object::toString).collect(Collectors.toList());
                 stub.putUrls(url, urlStrings);
                 url = stub.getUrl();
+
             }
-        } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
-            e.printStackTrace();
+        } catch (Exception ex) {
+            System.err.println("Client exception: " + ex.toString());
+            ex.printStackTrace();
         }
     }
 }

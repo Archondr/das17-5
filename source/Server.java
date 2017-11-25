@@ -6,8 +6,6 @@ import java.util.*;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
-    private static int registryPort = 1099;
-
     private Set<String> crawled = new HashSet<>();
     private Queue<String> queue = new LinkedList<>();
     private Set<String> unconfirmed = new HashSet<>();
@@ -15,10 +13,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     public Server(Iterable<String> seedUrls) throws RemoteException {
         seedUrls.forEach(queue::add);
-    }
-
-    public String sayHello() throws RemoteException {
-        return "Hello World!";
     }
 
     public synchronized String getUrl() {
@@ -58,19 +52,29 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         });
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
+
+        int registryPort = 1099;
+
+        if(args[0] != null) {
+            registryPort = Integer.parseInt(args[0]);
+        }
+
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
             Server server = new Server(seedUrls);
             Registry registry = LocateRegistry.createRegistry(registryPort); // TODO change back to LocateRegistry.getRegistry()
-            registry.rebind("Server", server);
+            registry.rebind("CrawlerServer", server);
 
             new Thread(new CronJob(server)).start();
+
             while (true) {
                 Thread.sleep(30 * 1000);
                 server.printUrls();
             }
+
         } catch(Exception ex){
+            System.err.println("Server exception: " + ex.toString());
             ex.printStackTrace();
         }
     }
