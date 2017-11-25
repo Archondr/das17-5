@@ -2,13 +2,14 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private Set<String> crawled = new HashSet<>();
     private Queue<String> queue = new LinkedList<>();
-    private Set<String> unconfirmed = new HashSet<>();
+    private HashMap<String, LocalDateTime> unconfirmed = new HashMap<>();
     private List<Edge> edges = new LinkedList<>();
 
     public Server(Iterable<String> seedUrls) throws RemoteException {
@@ -18,7 +19,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public synchronized String getUrl() {
         String url = queue.poll();
         if (url != null) {
-            unconfirmed.add(url);
+            unconfirmed.put(url, LocalDateTime.now());
         }
         return url;
     }
@@ -36,19 +37,25 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         });
     }
 
+    public synchronized void clientCheckIn(String url) throws RemoteException {
+        unconfirmed.replace(url, LocalDateTime.now());
+    }
+
     public synchronized void printUrls() {
         crawled.forEach(System.out::println);
         System.out.println(crawled.size());
-        unconfirmed.forEach(System.out::println);
+        unconfirmed.keySet().forEach(System.out::println);
         System.out.println(unconfirmed.size());
     }
 
     public synchronized void moveUnconfirmedToQueue() {
         //TODO find a way to do without a copy of unconfirmed
-        Iterable<String> urlsToMove = new LinkedList<>(unconfirmed);
+        Iterable<String> urlsToMove = new LinkedList<>(unconfirmed.keySet());
         urlsToMove.forEach(url -> {
-            unconfirmed.remove(url);
-            queue.add(url);
+            if( unconfirmed.get(url).plusMinutes(1).isBefore(LocalDateTime.now()) ){
+                unconfirmed.remove(url);
+                queue.add(url);
+            }
         });
     }
 
