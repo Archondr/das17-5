@@ -7,24 +7,36 @@ import java.util.*;
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private Set<String> crawled = new HashSet<>();
+    private Set<String> queued = new HashSet<>();
     private LinkedList<String> queue = new LinkedList<>();
     private Set<String> unconfirmed = new HashSet<>();
-    private List<Edge> edges = new LinkedList<>();
+    private Set<Edge> edges = new HashSet<>();
 
     public Server(Iterable<String> seedUrls) throws RemoteException {
         seedUrls.forEach(queue::add);
+        seedUrls.forEach(queued::add);
     }
 
     public synchronized String getUrl() {
         String url = queue.poll();
         if (url != null) {
             unconfirmed.add(url);
+            queued.remove(url);
         }
         return url;
     }
 
-    public synchronized void putUrls(String src, Iterable<String> urls) {
-        if (src != null) {
+    public synchronized void putEdges(Iterable<Edge> edges) {
+        edges.forEach(e -> {
+            unconfirmed.remove(e.getFrom());
+            crawled.add(e.getFrom());
+            if (!crawled.contains(e.getTo()) && !queued.contains(e.getTo())) {
+                queue.add(e.getTo());
+                queued.add(e.getTo());
+            }
+            this.edges.add(e);
+        });
+        /*if (src != null) {
             unconfirmed.remove(src);
         }
         urls.forEach(url -> {
@@ -33,7 +45,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 queue.add(url);
             }
             edges.add(new Edge(src, url));
-        });
+        });*/
     }
 
     public synchronized void printUrls() {
@@ -49,6 +61,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         urlsToMove.forEach(url -> {
             unconfirmed.remove(url);
             queue.addFirst(url);
+            queued.add(url);
         });
     }
 
@@ -56,7 +69,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         int registryPort = 1099;
 
-        if(args[0] != null) {
+        if(args.length > 0 && args[0] != null) {
             registryPort = Integer.parseInt(args[0]);
         }
 
