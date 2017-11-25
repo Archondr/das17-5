@@ -7,7 +7,7 @@ import java.util.*;
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private Set<String> crawled = new HashSet<>();
-    private Queue<String> queue = new LinkedList<>();
+    private LinkedList<String> queue = new LinkedList<>();
     private Set<String> unconfirmed = new HashSet<>();
     private List<Edge> edges = new LinkedList<>();
 
@@ -48,7 +48,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         Iterable<String> urlsToMove = new LinkedList<>(unconfirmed);
         urlsToMove.forEach(url -> {
             unconfirmed.remove(url);
-            queue.add(url);
+            queue.addFirst(url);
         });
     }
 
