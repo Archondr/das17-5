@@ -16,7 +16,9 @@ public class ClientCheckIn implements Runnable{
     @Override
     public void run() {
         try{
-            stub.clientCheckIn(url);
+            if( url != null ){
+                stub.clientCheckIn(url);
+            }
         } catch (RemoteException ex){
             System.err.println("ClientCheckIn Error: " + ex.toString());
             ex.printStackTrace();
