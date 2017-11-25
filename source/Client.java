@@ -18,18 +18,18 @@ public class Client implements Runnable {
         try {
             ClientCheckIn clientCheckIn = new ClientCheckIn(stub);
             Executors.newScheduledThreadPool(1).scheduleAtFixedRate(clientCheckIn, 0, 30, TimeUnit.SECONDS);
-
-            String url = stub.getUrl();
-            System.err.println(url);
-            clientCheckIn.updateUrl(url);
-            for (int i = 0; i < 20 && url != null; ++i) {
-
-                URL urlToCrawl = new URL(url);
-                List<Edge> edges = Crawler.crawlModified(urlToCrawl, 20);
-                stub.putEdges(edges);
-                url = stub.getUrl();
+            while (true) {
+                String url = stub.getUrl();
+                System.err.println(url);
+                if (url == null) continue;
                 clientCheckIn.updateUrl(url);
-
+                for (int i = 0; i < 20 && url != null; ++i) {
+                    URL urlToCrawl = new URL(url);
+                    List<Edge> edges = Crawler.crawlModified(urlToCrawl, 20);
+                    stub.putEdges(edges);
+                    url = stub.getUrl();
+                    clientCheckIn.updateUrl(url);
+                }
             }
         } catch (Exception ex) {
             System.err.println("In client.run()");
