@@ -63,7 +63,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
             Server server = new Server(seedUrls);
-            Registry registry = LocateRegistry.createRegistry(registryPort); // TODO change back to LocateRegistry.getRegistry()
+            Registry registry;
+            try {
+                registry = LocateRegistry.createRegistry(registryPort);
+            } catch (RemoteException ex) {
+                registry = LocateRegistry.getRegistry(registryPort);
+            }
             registry.rebind("CrawlerServer", server);
 
             new Thread(new CronJob(server)).start();
