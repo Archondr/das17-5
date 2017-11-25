@@ -2,10 +2,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
@@ -14,12 +11,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private Set<String> crawled = new HashSet<>();
     private Queue<String> queue = new LinkedList<>();
     private Set<String> unconfirmed = new HashSet<>();
+    private List<Edge> edges = new LinkedList<>();
 
-    public Server() throws RemoteException {
-        super();
-        String seedUrl = "https://www.google.co.uk";
-        queue.add(seedUrl);
-        crawled.add(seedUrl);
+    public Server(Iterable<String> seedUrls) throws RemoteException {
+        seedUrls.forEach(queue::add);
     }
 
     public String sayHello() throws RemoteException {
@@ -43,6 +38,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 crawled.add(url);
                 queue.add(url);
             }
+            edges.add(new Edge(src, url));
         });
     }
 
@@ -64,7 +60,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     public static void main(String args[]) {
         try {
-            Server server = new Server();
+            Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
+            Server server = new Server(seedUrls);
             Registry registry = LocateRegistry.createRegistry(registryPort); // TODO change back to LocateRegistry.getRegistry()
             registry.rebind("Server", server);
 
