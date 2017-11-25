@@ -55,25 +55,26 @@ public class Crawler {
         return urls;
     }
 
-    public static List<Edge> crawlModified(URL start, int limit) {
+    public static List<Edge> crawlModified(URL start) {
+        return crawlModified(start, 1);
+    }
+
+    public static List<Edge> crawlModified(URL start, int n) {
         List<Edge> edges = new LinkedList<>();
-        List<URL> urls = new ArrayList<URL>(limit);
+        Queue<URL> urls = new LinkedList<>();
         urls.add(start);
 
         // We maintain this set to be exact copy of the URLs list in order to use it for faster checks on whether or not we have such an URL already in the
         // list. Thus we are sacrificing memory in the name of performance.
         Set<URL> urlsCopy = new HashSet<URL>(urls);
-        int i = 0;
-        while (urls.size() < limit && i < urls.size()) {
-            URL currentUrl = urls.get(i);
+        for (int i = 0; i < n; ++i) {
+            URL currentUrl = urls.poll();
+            if (currentUrl == null) continue;
             String urlString = currentUrl.toString();
             for (URL url : extractLinks(currentUrl)) {
                 if (urlsCopy.add(url)) {
                     urls.add(url);
                     edges.add(new Edge(urlString, url.toString()));
-                    if (urls.size() == limit) {
-                        break;
-                    }
                 }
             }
             i++;
