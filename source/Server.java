@@ -4,6 +4,9 @@ import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
@@ -70,6 +73,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             registryPort = Integer.parseInt(args[0]);
         }
 
+        final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
             Server server = new Server(seedUrls);
@@ -81,7 +86,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             }
             registry.rebind("CrawlerServer", server);
 
-            new Thread(new CronJob(server)).start();
+            Runnable moveUnconfirmed = server::moveUnconfirmedToQueue;
+            scheduler.scheduleAtFixedRate(moveUnconfirmed, 40, 40, TimeUnit.SECONDS);
 
             while (true) {
                 Thread.sleep(30 * 1000);

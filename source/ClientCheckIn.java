@@ -5,8 +5,11 @@ public class ClientCheckIn implements Runnable{
     ServerInterface stub;
     String url;
 
-    public ClientCheckIn(ServerInterface stub, String url){
+    public ClientCheckIn(ServerInterface stub){
         this.stub = stub;
+    }
+
+    public void updateUrl(String url) {
         this.url = url;
     }
 
