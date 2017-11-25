@@ -8,32 +8,34 @@ import java.util.*;
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private Set<String> crawled = new HashSet<>();
-    private Queue<String> queue = new LinkedList<>();
+    private Set<String> queued = new HashSet<>();
+    private LinkedList<String> queue = new LinkedList<>();
+    private Set<Edge> edges = new HashSet<>();
     private HashMap<String, LocalDateTime> unconfirmed = new HashMap<>();
-    private List<Edge> edges = new LinkedList<>();
 
     public Server(Iterable<String> seedUrls) throws RemoteException {
         seedUrls.forEach(queue::add);
+        seedUrls.forEach(queued::add);
     }
 
     public synchronized String getUrl() {
         String url = queue.poll();
         if (url != null) {
             unconfirmed.put(url, LocalDateTime.now());
+            queued.remove(url);
         }
         return url;
     }
 
-    public synchronized void putUrls(String src, Iterable<String> urls) {
-        if (src != null) {
-            unconfirmed.remove(src);
-        }
-        urls.forEach(url -> {
-            if (!crawled.contains(url)) {
-                crawled.add(url);
-                queue.add(url);
+    public synchronized void putEdges(Iterable<Edge> edges) {
+        edges.forEach(e -> {
+            unconfirmed.remove(e.getFrom());
+            crawled.add(e.getFrom());
+            if (!crawled.contains(e.getTo()) && !queued.contains(e.getTo())) {
+                queue.add(e.getTo());
+                queued.add(e.getTo());
             }
-            edges.add(new Edge(src, url));
+            this.edges.add(e);
         });
     }
 
@@ -54,7 +56,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         urlsToMove.forEach(url -> {
             if( unconfirmed.get(url).plusMinutes(1).isBefore(LocalDateTime.now()) ){
                 unconfirmed.remove(url);
-                queue.add(url);
+                queue.addFirst(url);
+                queued.add(url);
             }
         });
     }
@@ -63,14 +66,19 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         int registryPort = 1099;
 
-        if(args[0] != null) {
+        if(args.length > 0 && args[0] != null) {
             registryPort = Integer.parseInt(args[0]);
         }
 
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
             Server server = new Server(seedUrls);
-            Registry registry = LocateRegistry.createRegistry(registryPort); // TODO change back to LocateRegistry.getRegistry()
+            Registry registry;
+            try {
+                registry = LocateRegistry.createRegistry(registryPort);
+            } catch (RemoteException ex) {
+                registry = LocateRegistry.getRegistry(registryPort);
+            }
             registry.rebind("CrawlerServer", server);
 
             new Thread(new CronJob(server)).start();

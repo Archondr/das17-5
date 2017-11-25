@@ -3,12 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +53,32 @@ public class Crawler {
             i++;
         }
         return urls;
+    }
+
+    public static List<Edge> crawlModified(URL start, int limit) {
+        List<Edge> edges = new LinkedList<>();
+        List<URL> urls = new ArrayList<URL>(limit);
+        urls.add(start);
+
+        // We maintain this set to be exact copy of the URLs list in order to use it for faster checks on whether or not we have such an URL already in the
+        // list. Thus we are sacrificing memory in the name of performance.
+        Set<URL> urlsCopy = new HashSet<URL>(urls);
+        int i = 0;
+        while (urls.size() < limit && i < urls.size()) {
+            URL currentUrl = urls.get(i);
+            String urlString = currentUrl.toString();
+            for (URL url : extractLinks(currentUrl)) {
+                if (urlsCopy.add(url)) {
+                    urls.add(url);
+                    edges.add(new Edge(urlString, url.toString()));
+                    if (urls.size() == limit) {
+                        break;
+                    }
+                }
+            }
+            i++;
+        }
+        return edges;
     }
 
     /**
