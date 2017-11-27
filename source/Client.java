@@ -22,7 +22,10 @@ public class Client implements Runnable {
             while (true) {
                 String url = stub.getUrl();
                 System.err.println(url);
-                if (url == null) continue;
+                if (url == null) {
+                    Thread.sleep(3 * 1000);
+                    continue;
+                }
                 clientCheckIn.updateUrl(url);
                 for (int i = 0; i < 20 && url != null; ++i) {
                     URL urlToCrawl = new URL(url);
@@ -42,6 +45,7 @@ public class Client implements Runnable {
 
         String host = "localhost";
         int threadNumber = 1;
+        //threadNumber = 2;
 
         if(args.length > 0 && args[0] != null){
             host = args[0];

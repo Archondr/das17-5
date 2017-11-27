@@ -24,4 +24,9 @@ public class Edge implements Serializable {
     public List<String> toList() {
         return Arrays.asList(from, to);
     }
+
+    @Override
+    public String toString() {
+        return toList().toString();
+    }
 }

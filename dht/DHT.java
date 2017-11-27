@@ -8,6 +8,7 @@ import java.util.List;
 public interface DHT<V> {
 
 	void enqueue(String s);
+	String dequeue();
 
 	/**
 	 * Get an object that is mapped to the key.

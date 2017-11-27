@@ -322,6 +322,11 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 	}
 
 	@Override
+	public String dequeue() {
+		return dequeueLocal();
+	}
+
+	@Override
 	public void remove(String key) {
 		try {
 			String k = Key.generate(key, N);

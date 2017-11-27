@@ -10,28 +10,27 @@ import java.util.concurrent.TimeUnit;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
-    private Set<String> crawled = new HashSet<>();
-    private Set<String> queued = new HashSet<>();
-    private LinkedList<String> queue = new LinkedList<>();
-    private Set<Edge> edges = new HashSet<>();
+    private Set<String> unqueueable = new HashSet<>(); // crawled (confirmed) + queued
+    private Set<Edge> edges = new HashSet<>(); // final results
     private HashMap<String, LocalDateTime> unconfirmed = new HashMap<>();
 
     private DHT<String> dht;
 
     public Server(String name, Iterable<String> seedUrls) throws RemoteException {
-        seedUrls.forEach(queue::add);
-        seedUrls.forEach(queued::add);
+        dht = new NodeImpl<>(name);
+        seedUrls.forEach(dht::enqueue);
+        seedUrls.forEach(unqueueable::add);
     }
 
     public Server(String name, String other) throws Exception {
-        dht = new NodeImpl<String>(name, "localhost", 1099, other);
+        dht = new NodeImpl<>(name, "localhost", 1099, other);
     }
 
     public synchronized String getUrl() {
-        String url = queue.poll();
+        String url = dht.dequeue();
         if (url != null) {
             unconfirmed.put(url, LocalDateTime.now());
-            queued.remove(url);
+            unqueueable.remove(url);
         }
         return url;
     }
@@ -39,10 +38,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public synchronized void putEdges(Iterable<Edge> edges) {
         edges.forEach(e -> {
             unconfirmed.remove(e.getFrom());
-            crawled.add(e.getFrom());
-            if (!crawled.contains(e.getTo()) && !queued.contains(e.getTo())) {
-                queue.add(e.getTo());
-                queued.add(e.getTo());
+            unqueueable.add(e.getFrom());
+            if (!unqueueable.contains(e.getTo())) {
+                dht.enqueue(e.getTo());
+                unqueueable.add(e.getTo());
             }
             this.edges.add(e);
         });
@@ -53,8 +52,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     public synchronized void printUrls() {
-        crawled.forEach(System.out::println);
-        System.out.println(crawled.size());
+        edges.forEach(System.out::println);
+        System.out.println(edges.size());
         unconfirmed.keySet().forEach(System.out::println);
         System.out.println(unconfirmed.size());
     }
@@ -65,8 +64,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         urlsToMove.forEach(url -> {
             if( unconfirmed.get(url).plusMinutes(1).isBefore(LocalDateTime.now()) ){
                 unconfirmed.remove(url);
-                queue.addFirst(url);
-                queued.add(url);
+                dht.enqueue(url);
+                unqueueable.add(url);
             }
         });
     }
