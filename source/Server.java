@@ -10,27 +10,30 @@ import java.util.concurrent.TimeUnit;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
-    private Set<String> unqueueable = new HashSet<>(); // crawled (confirmed) + queued
+    private NodeImpl<String> node;
     private Set<Edge> edges = new HashSet<>(); // final results
     private HashMap<String, LocalDateTime> unconfirmed = new HashMap<>();
 
-    private DHT<String> dht;
+    public Node<String> getNode() throws RemoteException { return node; }
 
     public Server(String name, Iterable<String> seedUrls) throws RemoteException {
-        dht = new NodeImpl<>(name);
-        seedUrls.forEach(dht::enqueue);
-        seedUrls.forEach(unqueueable::add);
+        node = new NodeImpl<>(name);
+        seedUrls.forEach(node::enqueue);
+        seedUrls.forEach(url -> node.put(url, url));
     }
 
-    public Server(String name, String other) throws Exception {
-        dht = new NodeImpl<>(name, "localhost", 1099, other);
+    public Server(String name, Registry registry, String other) throws Exception {
+        ServerInterface server = (ServerInterface) registry.lookup("server"+other);
+        Node<String> node = server.getNode();
+        this.node = new NodeImpl<>(name, node);
     }
 
     public synchronized String getUrl() {
-        String url = dht.dequeue();
+        System.err.println("getUrl()");
+        String url = node.dequeue();
         if (url != null) {
             unconfirmed.put(url, LocalDateTime.now());
-            unqueueable.remove(url);
+            node.remove(url);
         }
         return url;
     }
@@ -38,10 +41,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public synchronized void putEdges(Iterable<Edge> edges) {
         edges.forEach(e -> {
             unconfirmed.remove(e.getFrom());
-            unqueueable.add(e.getFrom());
-            if (!unqueueable.contains(e.getTo())) {
-                dht.enqueue(e.getTo());
-                unqueueable.add(e.getTo());
+            node.put(e.getFrom(), e.getFrom());
+            if (node.get(e.getTo()) == null) {
+                node.enqueue(e.getTo());
+                node.put(e.getTo(), e.getTo());
             }
             this.edges.add(e);
         });
@@ -64,8 +67,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         urlsToMove.forEach(url -> {
             if( unconfirmed.get(url).plusMinutes(1).isBefore(LocalDateTime.now()) ){
                 unconfirmed.remove(url);
-                dht.enqueue(url);
-                unqueueable.add(url);
+                node.enqueue(url);
+                node.put(url, url);
             }
         });
     }
@@ -73,6 +76,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public static void main(String[] args) {
 
         int registryPort = 1099;
+        String name = "first";
 
         if(args.length > 0 && args[0] != null) {
             registryPort = Integer.parseInt(args[0]);
@@ -82,14 +86,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
-            Server server = new Server("0", seedUrls);
             Registry registry;
             try {
                 registry = LocateRegistry.createRegistry(registryPort);
             } catch (RemoteException ex) {
                 registry = LocateRegistry.getRegistry(registryPort);
             }
-            registry.rebind("CrawlerServer", server);
+            Server server = new Server(name, seedUrls);
+            //name = "second"; Server server = new Server(name, registry, "first");
+            registry.rebind("server"+name, server);
+            System.err.println(Arrays.asList(registry.list()));
 
             Runnable moveUnconfirmed = server::moveUnconfirmedToQueue;
             scheduler.scheduleAtFixedRate(moveUnconfirmed, 40, 40, TimeUnit.SECONDS);

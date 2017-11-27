@@ -44,6 +44,8 @@ public class Client implements Runnable {
     public static void main(String[] args) {
 
         String host = "localhost";
+        String managerName = "first";
+        //managerName = "second";
         int threadNumber = 1;
         //threadNumber = 2;
 
@@ -57,7 +59,7 @@ public class Client implements Runnable {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerInterface stub = (ServerInterface) registry.lookup("CrawlerServer");
+            ServerInterface stub = (ServerInterface) registry.lookup("server"+managerName);
             List<Thread> threads = new LinkedList<>();
             for (int i = 0; i < threadNumber; ++i) {
                 Thread t = new Thread(new Client(stub));

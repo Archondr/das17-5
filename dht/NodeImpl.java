@@ -188,7 +188,8 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 		List<String> handover = new LinkedList<>();
 		LinkedList<String> left = new LinkedList<>();
 		for (String s : queue) {
-			if (Key.between(s, oldPredKey, newPredKey)) handover.add(s);
+			String key = Key.generate(s, N);
+			if (Key.between(key, oldPredKey, newPredKey)) handover.add(s);
 			else left.add(s);
 		}
 		queue = left;

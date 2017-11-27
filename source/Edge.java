@@ -26,7 +26,11 @@ public class Edge implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return toList().toString();
-    }
+    public int hashCode() { return (from + to).hashCode(); }
+
+    @Override
+    public boolean equals(Object o) { return o instanceof Edge && toString().equals(o.toString()); }
+
+    @Override
+    public String toString() { return toList().toString(); }
 }
