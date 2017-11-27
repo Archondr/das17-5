@@ -1,5 +1,3 @@
-package dht;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -14,6 +12,7 @@ public interface Node<V> extends Remote {
 
 	void enqueueLocal(String s) throws RemoteException;
 	String dequeueLocal() throws RemoteException;
+	List<String> handoverQueue(String oldPredKey, String newPredKey) throws RemoteException;
 	
 	/**
 	 * Get the key associated with the Node.

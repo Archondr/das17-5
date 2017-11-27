@@ -1,5 +1,3 @@
-package dht;
-
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -129,6 +127,9 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 					Map<String, E> handover = successor.handover(predKey, key);
 					for(String k : handover.keySet())
 						storage.put(k, handover.get(k));
+					/////////////////////////////////////////
+					for (String s : successor.handoverQueue(predKey, key)) enqueueLocal(s);
+					/////////////////////////////////////////
 //					System.out.println(name + ": Done with handover.");
 					
 					joined = true;
@@ -150,6 +151,13 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 //			System.out.println(name + ": I'm leaving. " + successor + " will handle my storage. (" + storage.size() + ") items.");
 			for(String k : storage.keySet())
 				successor.addStored(k, storage.get(k));
+			///////////////////////////////////
+			String s = dequeueLocal();
+			while (s != null) {
+				successor.enqueueLocal(s);
+				s = dequeueLocal();
+			}
+			///////////////////////////////////
 			System.out.println(name + ": Done.");
 			
 			successor.setPredecessor(predecessor);
@@ -172,6 +180,18 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 			if(Key.between(k, oldPredKey, newPredKey))
 				handover.put(k, storage.remove(k));
 //		System.out.println(name + ": Handing over " + handover.size() + " keys/values.");
+		return handover;
+	}
+
+	@Override
+	public List<String> handoverQueue(String oldPredKey, String newPredKey) throws RemoteException {
+		List<String> handover = new LinkedList<>();
+		LinkedList<String> left = new LinkedList<>();
+		for (String s : queue) {
+			if (Key.between(s, oldPredKey, newPredKey)) handover.add(s);
+			else left.add(s);
+		}
+		queue = left;
 		return handover;
 	}
 	
