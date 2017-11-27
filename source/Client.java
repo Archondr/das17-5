@@ -18,6 +18,7 @@ public class Client implements Runnable {
         try {
             ClientCheckIn clientCheckIn = new ClientCheckIn(stub);
             Executors.newScheduledThreadPool(1).scheduleAtFixedRate(clientCheckIn, 0, 30, TimeUnit.SECONDS);
+            // TODO replace with callback
             while (true) {
                 String url = stub.getUrl();
                 System.err.println(url);

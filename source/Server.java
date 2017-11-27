@@ -16,9 +16,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     private Set<Edge> edges = new HashSet<>();
     private HashMap<String, LocalDateTime> unconfirmed = new HashMap<>();
 
-    public Server(Iterable<String> seedUrls) throws RemoteException {
+    private DHT<String> dht;
+
+    public Server(String name, Iterable<String> seedUrls) throws RemoteException {
         seedUrls.forEach(queue::add);
         seedUrls.forEach(queued::add);
+    }
+
+    public Server(String name, String other) throws Exception {
+        dht = new NodeImpl<String>(name, "localhost", 1099, other);
     }
 
     public synchronized String getUrl() {
@@ -77,7 +83,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
-            Server server = new Server(seedUrls);
+            Server server = new Server("0", seedUrls);
             Registry registry;
             try {
                 registry = LocateRegistry.createRegistry(registryPort);
