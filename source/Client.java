@@ -18,18 +18,22 @@ public class Client implements Runnable {
         try {
             ClientCheckIn clientCheckIn = new ClientCheckIn(stub);
             Executors.newScheduledThreadPool(1).scheduleAtFixedRate(clientCheckIn, 0, 30, TimeUnit.SECONDS);
-
-            String url = stub.getUrl();
-            System.err.println(url);
-            clientCheckIn.updateUrl(url);
-            for (int i = 0; i < 20 && url != null; ++i) {
-
-                URL urlToCrawl = new URL(url);
-                List<Edge> edges = Crawler.crawlModified(urlToCrawl, 20);
-                stub.putEdges(edges);
-                url = stub.getUrl();
+            // TODO replace with callback
+            while (true) {
+                String url = stub.getUrl();
+                System.err.println(url);
+                if (url == null) {
+                    Thread.sleep(3 * 1000);
+                    continue;
+                }
                 clientCheckIn.updateUrl(url);
-
+                for (int i = 0; i < 20 && url != null; ++i) {
+                    URL urlToCrawl = new URL(url);
+                    List<Edge> edges = Crawler.crawlModified(urlToCrawl, 20);
+                    stub.putEdges(edges);
+                    url = stub.getUrl();
+                    clientCheckIn.updateUrl(url);
+                }
             }
         } catch (Exception ex) {
             System.err.println("In client.run()");
@@ -40,7 +44,10 @@ public class Client implements Runnable {
     public static void main(String[] args) {
 
         String host = "localhost";
+        String managerName = "first";
+        //managerName = "second";
         int threadNumber = 1;
+        //threadNumber = 2;
 
         if(args.length > 0 && args[0] != null){
             host = args[0];
@@ -52,7 +59,7 @@ public class Client implements Runnable {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerInterface stub = (ServerInterface) registry.lookup("CrawlerServer");
+            ServerInterface stub = (ServerInterface) registry.lookup("server"+managerName);
             List<Thread> threads = new LinkedList<>();
             for (int i = 0; i < threadNumber; ++i) {
                 Thread t = new Thread(new Client(stub));
