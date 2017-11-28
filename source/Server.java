@@ -59,6 +59,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         System.out.println(edges.size());
         unconfirmed.keySet().forEach(System.out::println);
         System.out.println(unconfirmed.size());
+        // Uncomment the following line if you have graphviz installed and want to produce graphs
+        GraphGenerator.generate(edges);
     }
 
     public synchronized void moveUnconfirmedToQueue() {
