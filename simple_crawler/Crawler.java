@@ -151,7 +151,7 @@ public class Crawler {
     private static String fetchContent(URL url) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        System.out.println(url);
+        //System.out.println(url);
 
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -165,7 +165,9 @@ public class Crawler {
         	// e.printStackTrace();
             System.err.println("An error occured while atempt to fetch content from " + url + " \nIts probably a 403 error.");
         }
-        return stringBuilder.toString();
+        String s = stringBuilder.toString();
+        Stats.addWorkerIn(s);
+        return s;
     }
 
     /**

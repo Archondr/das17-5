@@ -42,6 +42,7 @@ public class Worker implements Runnable {
         }*/
         System.err.println(NAME + ": checking in with " + currentUrl.get());
         try {
+            Stats.addWorkerOut(currentUrl.get());
             workQueue.checkIn(currentUrl.get());
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -53,11 +54,12 @@ public class Worker implements Runnable {
             String s = null;
             try {
                 s = workQueue.getWork();
+                Stats.addWorkerIn(s);
                 currentUrl.set(s);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-            //System.out.println(NAME + ": started crawling " + s);
+            System.out.println(NAME + ": started crawling " + s);
             if (s == null) {
                 try {
                     Thread.sleep(3 * 1000);
@@ -69,6 +71,7 @@ public class Worker implements Runnable {
             try {
                 List<Edge> results = Crawler.crawlModified(new URL(s), 1);
                 workQueue.addResults(results);
+                Stats.addWorkerOut(results);
             } catch (MalformedURLException|RemoteException e) {
                 e.printStackTrace();
             }

@@ -4,10 +4,11 @@ import java.util.*;
 public class Runner {
 
     private static final int MANAGER_NUMBER = 1;
-    private static final int WORKERS_PER_MANAGER = 1;
-    private static final int THREADS_PER_WORKER = 3;
+    private static final int WORKERS_PER_MANAGER = 27;
+    private static final int THREADS_PER_WORKER = 1;
 
     public static void main(String[] args) throws RemoteException {
+        System.out.println("" + MANAGER_NUMBER + " * " + WORKERS_PER_MANAGER + " * " + THREADS_PER_WORKER);
         Sink sink = new Sink();
         List<Manager> managers = new ArrayList<>(MANAGER_NUMBER);
         for (int i = 0; i < MANAGER_NUMBER; ++i) {
@@ -36,6 +37,8 @@ public class Runner {
             Set<Edge> edges = sink.getEdges();
             //edges.forEach(System.out::println);
             System.out.println(edges.size());
+            Stats.print(MANAGER_NUMBER, MANAGER_NUMBER * WORKERS_PER_MANAGER);
+            System.exit(0);
         }
     }
 }

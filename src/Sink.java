@@ -24,6 +24,7 @@ public class Sink extends UnicastRemoteObject implements Collector {
     }
 
     public void add(Iterable<Edge> edges) throws RemoteException {
+        Stats.addSinkIn(edges);
         for (Edge e : edges) {
             this.edges.put(e, true);
         }
