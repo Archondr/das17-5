@@ -86,7 +86,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             System.out.println(name + ": " + s + " has just been crawled");
         }
         try {
-            collector.putEdges(new LinkedList<>(uniqueEdges));
+            collector.add(new LinkedList<>(uniqueEdges));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
