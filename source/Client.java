@@ -10,8 +10,30 @@ public class Client implements Runnable {
 
     private ServerInterface stub;
 
-    private Client(ServerInterface server) {
+    private final String name;
+
+    private Client(ServerInterface server, String name) {
         stub = server;
+        this.name = name;
+    }
+
+    public Client(String serverName, int threadNumber, String clientName) {
+        String host = "localhost";
+        name = serverName + "-" + clientName;
+        try {
+            Registry registry = LocateRegistry.getRegistry(host);
+            ServerInterface stub = (ServerInterface) registry.lookup("server " + serverName);
+            List<Thread> threads = new LinkedList<>();
+            for (int i = 0; i < threadNumber; ++i) {
+                Thread t = new Thread(new Client(stub, name + "-" + Integer.toString(i)));
+                threads.add(t);
+                t.start();
+                System.out.println(name + ": thread " + i + " started");
+            }
+        } catch (Exception ex) {
+            System.err.println("Client exception: " + ex.toString());
+            ex.printStackTrace();
+        }
     }
 
     public void run() {
@@ -21,7 +43,7 @@ public class Client implements Runnable {
             // TODO replace with callback
             while (true) {
                 String url = stub.getUrl();
-                System.err.println(url);
+                System.out.println(name + ": started crawling " + url);
                 if (url == null) {
                     Thread.sleep(3 * 1000);
                     continue;
@@ -29,7 +51,7 @@ public class Client implements Runnable {
                 clientCheckIn.updateUrl(url);
                 for (int i = 0; i < 20 && url != null; ++i) {
                     URL urlToCrawl = new URL(url);
-                    List<Edge> edges = Crawler.crawlModified(urlToCrawl, 20);
+                    List<Edge> edges = Crawler.crawlModified(urlToCrawl, 1);
                     stub.putEdges(edges);
                     url = stub.getUrl();
                     clientCheckIn.updateUrl(url);
@@ -59,10 +81,10 @@ public class Client implements Runnable {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerInterface stub = (ServerInterface) registry.lookup("server"+managerName);
+            ServerInterface stub = (ServerInterface) registry.lookup("server "+managerName);
             List<Thread> threads = new LinkedList<>();
             for (int i = 0; i < threadNumber; ++i) {
-                Thread t = new Thread(new Client(stub));
+                Thread t = new Thread(new Client(stub, ""));
                 threads.add(t);
                 t.start();
                 System.out.println("thread " + i + " started");

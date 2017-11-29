@@ -4,6 +4,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The implementation of a node/peer in the distributed hash table.
@@ -19,33 +22,33 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 	/**
 	 * The name (human-readable) of this node.
 	 */
-	private String name;
+	private final String name;
 	
 	/**
 	 * A key that decides which values this node is responsible for.
 	 */
-	private String key;
+	private final String key;
 	
 	/**
 	 * The successor in the ring.
 	 */
-	private Node<E> successor;
+	private AtomicReference<Node<E>> successor = new AtomicReference<>();
 	
 	/**
 	 * The predecessor in the ring.
 	 */
-	private Node<E> predecessor;
+	private AtomicReference<Node<E>> predecessor = new AtomicReference<>();
 	
 	/**
 	 * The actual storage of values that this node is responsible for.
 	 */
-	private HashMap<String, E> storage = new HashMap<>();
-	private LinkedList<String> queue = new LinkedList<>();
+	private Map<String, E> storage = new ConcurrentHashMap<>();
+	private Deque<String> queue = new ConcurrentLinkedDeque<>();
 	
 	/**
 	 * The routing table.
 	 */
-	private Map<String, Node<E>> fingers = new LinkedHashMap<>();
+	private Map<String, Node<E>> fingers = new ConcurrentHashMap<>();
 	
 	/**
 	 * The maximum number of keys (nodes/values) in the network.
@@ -66,8 +69,8 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 		this.name = name;
 		key = Key.generate(name, N);
 //		System.out.println(name + ": My key is " + key);
-		successor = this;
-		predecessor = this;
+		successor.set(this);
+		predecessor.set(this);
 		Registry registry;
 		try {
 			registry = LocateRegistry.createRegistry(DEFAULT_PORT);
@@ -124,11 +127,11 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 					
 					/*Get a share of the storage from our new successor*/
 //					System.out.println(name + ": Asking successor to handover");
-					Map<String, E> handover = successor.handover(predKey, key);
+					Map<String, E> handover = successor.get().handover(predKey, key);
 					for(String k : handover.keySet())
 						storage.put(k, handover.get(k));
 					/////////////////////////////////////////
-					for (String s : successor.handoverQueue(predKey, key)) enqueueLocal(s);
+					for (String s : successor.get().handoverQueue(predKey, key)) enqueueLocal(s);
 					/////////////////////////////////////////
 //					System.out.println(name + ": Done with handover.");
 					
@@ -150,20 +153,20 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 			/*Hand over items to successor.*/
 //			System.out.println(name + ": I'm leaving. " + successor + " will handle my storage. (" + storage.size() + ") items.");
 			for(String k : storage.keySet())
-				successor.addStored(k, storage.get(k));
+				successor.get().addStored(k, storage.get(k));
 			///////////////////////////////////
 			String s = dequeueLocal();
 			while (s != null) {
-				successor.enqueueLocal(s);
+				successor.get().enqueueLocal(s);
 				s = dequeueLocal();
 			}
 			///////////////////////////////////
 			System.out.println(name + ": Done.");
 			
-			successor.setPredecessor(predecessor);
-			predecessor.setSuccessor(successor);
-			successor = this;
-			predecessor = this;
+			successor.get().setPredecessor(predecessor.get());
+			predecessor.get().setSuccessor(successor.get());
+			successor.set(this);
+			predecessor.set(this);
 			updateRouting();
 		} catch(RemoteException e) {
 			System.err.println("Error leaving.");
@@ -186,7 +189,7 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 	@Override
 	public List<String> handoverQueue(String oldPredKey, String newPredKey) throws RemoteException {
 		List<String> handover = new LinkedList<>();
-		LinkedList<String> left = new LinkedList<>();
+		Deque<String> left = new ConcurrentLinkedDeque<>();
 		for (String s : queue) {
 			String key = Key.generate(s, N);
 			if (Key.between(key, oldPredKey, newPredKey)) handover.add(s);
@@ -208,22 +211,22 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 
 	@Override
 	public Node<E> getSuccessor() throws RemoteException {
-		return successor;
+		return successor.get();
 	}
 
 	@Override
 	public Node<E> getPredecessor() throws RemoteException {
-		return predecessor;
+		return predecessor.get();
 	}
 
 	@Override
 	public void setSuccessor(Node<E> succ) throws RemoteException {
-		successor = succ;
+		successor.set(succ);
 	}
 
 	@Override
 	public void setPredecessor(Node<E> pred) throws RemoteException {
-		predecessor = pred;
+		predecessor.set(pred);
 	}
 
 	@Override
@@ -231,18 +234,18 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 		if(this.key.equals(key) && count > 0) {
 			System.out.println("Probe returned after " + count + " hops.");
 		} else {
-			System.out.println(name + ": Forwarding probe to " + successor);
-			successor.probe(key, count+1);
+			System.out.println(name + ": Forwarding probe to " + successor.get());
+			successor.get().probe(key, count+1);
 		}
 	}
 
 	@Override
 	public Node<E> lookup(String key) throws RemoteException {
-		String predKey = predecessor.getKey();
+		String predKey = predecessor.get().getKey();
 		if(Key.between(key, predKey, getKey()))
 			return this;
 		else if(fingers.keySet().size() < 3) {
-			return successor.lookup(key);
+			return successor.get().lookup(key);
 		}
 		else {
 			String[] keys = {};
@@ -274,12 +277,18 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 
 	@Override
 	public void enqueueLocal(String s) {
+		//System.err.println("enqueueLocal: " + s);
+		//System.err.println("queue.size() before: " + queue.size());
 		queue.add(s);
+		//System.err.println("queue.size() after: " + queue.size());
 	}
 
 	@Override
 	public String dequeueLocal() {
-		return queue.poll();
+		//System.err.println("queue.size() before: " + queue.size());
+		String ret = queue.poll();
+		//System.err.println("dequeueLocal: " + ret);
+		return ret;
 	}
 	
 	@Override
@@ -401,7 +410,7 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 	}
 	
 	public void updateFingers(List<Node<E>> nodes) {
-		Map<String, Node<E>> fingers = new LinkedHashMap<>();
+		Map<String, Node<E>> fingers = new ConcurrentHashMap<>();
 		fingers.put(key, this);
 		try {
 			int myIndex = nodes.indexOf(this);
