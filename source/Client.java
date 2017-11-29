@@ -10,21 +10,25 @@ public class Client implements Runnable {
 
     private ServerInterface stub;
 
-    private Client(ServerInterface server) {
+    private final String name;
+
+    private Client(ServerInterface server, String name) {
         stub = server;
+        this.name = name;
     }
 
-    public Client(String name, int threadNumber) {
+    public Client(String serverName, int threadNumber, String clientName) {
         String host = "localhost";
+        name = serverName + "-" + clientName;
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerInterface stub = (ServerInterface) registry.lookup("server " + name);
+            ServerInterface stub = (ServerInterface) registry.lookup("server " + serverName);
             List<Thread> threads = new LinkedList<>();
             for (int i = 0; i < threadNumber; ++i) {
-                Thread t = new Thread(new Client(stub));
+                Thread t = new Thread(new Client(stub, name + "-" + Integer.toString(i)));
                 threads.add(t);
                 t.start();
-                System.out.println("thread " + i + " started");
+                System.out.println(name + ": thread " + i + " started");
             }
         } catch (Exception ex) {
             System.err.println("Client exception: " + ex.toString());
@@ -39,7 +43,7 @@ public class Client implements Runnable {
             // TODO replace with callback
             while (true) {
                 String url = stub.getUrl();
-                System.err.println("Err: " + url);
+                System.out.println(name + ": started crawling " + url);
                 if (url == null) {
                     Thread.sleep(3 * 1000);
                     continue;
@@ -80,7 +84,7 @@ public class Client implements Runnable {
             ServerInterface stub = (ServerInterface) registry.lookup("server "+managerName);
             List<Thread> threads = new LinkedList<>();
             for (int i = 0; i < threadNumber; ++i) {
-                Thread t = new Thread(new Client(stub));
+                Thread t = new Thread(new Client(stub, ""));
                 threads.add(t);
                 t.start();
                 System.out.println("thread " + i + " started");

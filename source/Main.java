@@ -6,15 +6,24 @@ import java.util.Map;
 
 public class Main {
 
-    private static final int PORT = 1099;
+    //private static final int PORT = 1099;
+    private static final int SERVER_NUMBER = 2;
+    private static final int CLIENTS_PER_SERVER = 2;
+    private static final int THREADS_PER_CLIENT = 2;
 
     public static void main(String[] args) throws RemoteException {
         CollectorImpl collector = new CollectorImpl();
         ArrayList<Server> servers = new ArrayList<>();
         Server firstServer = new Server("0", Arrays.asList("https://www.google.co.uk"));
-        servers.add(firstServer);
+        ArrayList<Client> clientList = new ArrayList<>();
+        for (int j = 0; j < CLIENTS_PER_SERVER; ++j) {
+            Client c = new Client("0", 1, Integer.toString(j));
+            clientList.add(c);
+        }
         Map<Server, ArrayList<Client>> clients = new HashMap<>();
-        for (int i = 1; i < 2; ++i) {
+        servers.add(firstServer);
+        clients.put(firstServer, clientList);
+        for (int i = 1; i < SERVER_NUMBER; ++i) {
             String name = Integer.toString(i);
             Server s = null;
             try {
@@ -22,9 +31,9 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            ArrayList<Client> clientList = new ArrayList<>();
-            for (int j = 0; j < 1; ++j) {
-                Client c = new Client(name, 1);
+            clientList = new ArrayList<>();
+            for (int j = 0; j < CLIENTS_PER_SERVER; ++j) {
+                Client c = new Client(name, THREADS_PER_CLIENT, Integer.toString(j));
                 clientList.add(c);
             }
             if (s != null) {

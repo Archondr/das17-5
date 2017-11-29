@@ -12,6 +12,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     private static final int PORT = 1099;
 
+    private final String name;
+
     private Collector collector;
     private NodeImpl<String> node;
     private Set<Edge> edges = new HashSet<>(); // final results
@@ -24,7 +26,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         node = new NodeImpl<>(name);
         seedUrls.forEach(node::enqueue);
         seedUrls.forEach(url -> node.put(url, url));
-        registry.rebind("server " + name, this);
+        this.name = "server " + name;
+        registry.rebind(this.name, this);
         System.err.println(Arrays.asList(registry.list()));
     }
 
@@ -33,7 +36,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         ServerInterface server = (ServerInterface) registry.lookup("server "+other);
         Node<String> node = server.getNode();
         this.node = new NodeImpl<>(name, node);
-        registry.rebind("server " + name, this);
+        this.name = "server " + name;
+        registry.rebind(this.name, this);
         System.err.println(Arrays.asList(registry.list()));
     }
 
@@ -55,7 +59,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     public synchronized String getUrl() {
         String url = node.dequeue();
-        System.err.println("getUrl() " + url);
         if (url != null) {
             unconfirmed.put(url, LocalDateTime.now());
             node.remove(url);
@@ -75,6 +78,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             this.edges.add(e);
             uniqueEdges.add(e);
         });
+        Set<String> uniqueCrawled = new HashSet<>();
+        for (Edge e : uniqueEdges) {
+            uniqueCrawled.add(e.getFrom());
+        }
+        for (String s : uniqueCrawled) {
+            System.out.println(name + ": " + s + " has just been crawled");
+        }
         try {
             collector.putEdges(new LinkedList<>(uniqueEdges));
         } catch (RemoteException e) {
@@ -87,10 +97,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     public synchronized void printUrls() {
-        edges.forEach(System.out::println);
-        System.out.println(edges.size());
-        unconfirmed.keySet().forEach(System.out::println);
-        System.out.println(unconfirmed.size());
+        //edges.forEach(System.out::println);
+        //System.out.println(edges.size());
+        //unconfirmed.keySet().forEach(System.out::println);
+        //System.out.println(unconfirmed.size());
     }
 
     public synchronized void moveUnconfirmedToQueue() {
@@ -118,8 +128,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
-            //Server server = new Server(name, seedUrls);
-            name = "second"; Server server = new Server(name, "first");
+            Server server = new Server(name, seedUrls);
+            //name = "second"; Server server = new Server(name, "first");
 
             Runnable moveUnconfirmed = server::moveUnconfirmedToQueue;
             scheduler.scheduleAtFixedRate(moveUnconfirmed, 40, 40, TimeUnit.SECONDS);
