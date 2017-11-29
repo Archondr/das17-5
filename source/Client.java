@@ -21,7 +21,7 @@ public class Client implements Runnable {
             // TODO replace with callback
             while (true) {
                 String url = stub.getUrl();
-                System.err.println(url);
+                System.err.println("Err: " + url);
                 if (url == null) {
                     Thread.sleep(3 * 1000);
                     continue;
@@ -29,7 +29,7 @@ public class Client implements Runnable {
                 clientCheckIn.updateUrl(url);
                 for (int i = 0; i < 20 && url != null; ++i) {
                     URL urlToCrawl = new URL(url);
-                    List<Edge> edges = Crawler.crawlModified(urlToCrawl, 20);
+                    List<Edge> edges = Crawler.crawlModified(urlToCrawl, 1);
                     stub.putEdges(edges);
                     url = stub.getUrl();
                     clientCheckIn.updateUrl(url);

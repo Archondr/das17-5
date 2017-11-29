@@ -19,12 +19,12 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 	/**
 	 * The name (human-readable) of this node.
 	 */
-	private String name;
+	private final String name;
 	
 	/**
 	 * A key that decides which values this node is responsible for.
 	 */
-	private String key;
+	private final String key;
 	
 	/**
 	 * The successor in the ring.

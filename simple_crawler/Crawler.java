@@ -77,7 +77,6 @@ public class Crawler {
                     edges.add(new Edge(urlString, url.toString()));
                 }
             }
-            i++;
         }
         return edges;
     }
