@@ -3,9 +3,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.*;
 
 public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
 
@@ -22,7 +22,7 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
     private final Map<String, Boolean> set = new ConcurrentHashMap<>();
     private final Deque<String> queue = new ConcurrentLinkedDeque<>();
 
-    private final Map<String, Boolean> unconfirmed = new ConcurrentHashMap<>();
+    private final Map<String, LocalDateTime> unconfirmed = new ConcurrentHashMap<>();
 
     public Manager(int n, int id) throws RemoteException {
         N = n;
@@ -47,7 +47,9 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
             e.printStackTrace();
         }
         this.collector = collector;
-        System.err.println(Arrays.asList(registry.list()));
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(this::queueUnconfirmed, 40, 40, TimeUnit.SECONDS);
+        //System.err.println(Arrays.asList(registry.list()));
     }
 
     @Override
@@ -69,7 +71,7 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         String s = queue.poll();
         if (s != null) {
             set.remove(s);
-            unconfirmed.put(s, true);
+            unconfirmed.put(s, LocalDateTime.now());
         }
         return s;
     }
@@ -91,6 +93,13 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         collector.add(found);
     }
 
+    @Override
+    public void checkIn(String s) throws RemoteException {
+        if (s != null) {
+            unconfirmed.replace(s, LocalDateTime.now());
+        }
+    }
+
     private Peer getPeer(int id) throws RemoteException {
         synchronized (peers) {
             Peer peer = peers.get(id);
@@ -107,13 +116,16 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
     }
 
     private void queueUnconfirmed() {
+        //System.err.println(NAME + ": queueing unconfirmed...");
         Set<String> set = unconfirmed.keySet();
-        unconfirmed.clear();
         for (String s : set) {
-            try {
-                add(s);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            if (unconfirmed.get(s).plusSeconds(40).isBefore(LocalDateTime.now())) {
+                unconfirmed.remove(s);
+                try {
+                    add(s);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -122,7 +134,6 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         long hashValue = s.hashCode();
         hashValue -= Integer.MIN_VALUE;
         hashValue %= N;
-        //System.err.println(s + " -> " + hashValue + ", " + s.hashCode());
         return (int) hashValue;
     }
 }

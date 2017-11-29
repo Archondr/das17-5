@@ -3,9 +3,9 @@ import java.util.*;
 
 public class Runner {
 
-    private static final int MANAGER_NUMBER = 1000;
+    private static final int MANAGER_NUMBER = 1;
     private static final int WORKERS_PER_MANAGER = 1;
-    private static final int THREADS_PER_WORKER = 1;
+    private static final int THREADS_PER_WORKER = 3;
 
     public static void main(String[] args) throws RemoteException {
         Sink sink = new Sink();
@@ -34,7 +34,7 @@ public class Runner {
                 Thread.currentThread().interrupt();
             }
             Set<Edge> edges = sink.getEdges();
-            edges.forEach(System.out::println);
+            //edges.forEach(System.out::println);
             System.out.println(edges.size());
         }
     }
