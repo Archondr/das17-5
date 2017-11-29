@@ -13,7 +13,7 @@ public class Stats {
 
     public static int getBytes(Object o) {
         if (o == null) {
-            return 4;
+            return 4 * 2;
         }
         if (o instanceof String) {
             return ((String) o).length() * 2;
@@ -53,8 +53,16 @@ public class Stats {
 
     public synchronized static void print(float m, float w) {
         System.out.println("Results(N) - mIn: " + (managerInN / m) + ", mOut: " + (managerOutN / m)
-                + ", wIn: " + (workerInN / w) + ", wOut: " + (workerOutN / w) + ", sIn: " + sinkInN);
-        System.out.println("Results(Bytes) - mIn: " + (managerInBytes / m) + ", mOut: " + (managerOutBytes / m)
-                + ", wIn: " + (workerInBytes / w) + ", wOut: " + (workerOutBytes / w) + ", sIn: " + sinkInBytes);
+                + ", wIn: " + (workerInN / w) + ", wOut: " + (workerOutN / w));// + ", sIn: " + (sinkInN));
+        System.out.println("Results(Bytes) - mIn: " + h(managerInBytes / m) + ", mOut: " +h (managerOutBytes / m)
+                + ", wIn: " + h(workerInBytes / w) + ", wOut: " + h(workerOutBytes / w));// + ", sIn: " + h(sinkInBytes));
+    }
+
+    public static String h(float f) {
+        return String.format("%.2e", f);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(h(1234));
     }
 }

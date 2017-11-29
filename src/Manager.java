@@ -49,14 +49,16 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         this.collector = collector;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::queueUnconfirmed, 40, 40, TimeUnit.SECONDS);
-        //System.err.println(Arrays.asList(registry.list()));
     }
 
     @Override
     public void add(String s) throws RemoteException {
         Stats.addManagerIn(s);
+        addInternal(s);
+    }
+
+    private void addInternal(String s) throws RemoteException {
         int hashValue = hash(s);
-        //System.err.println("" + hashValue + " " + ID);
         if (hashValue == ID) {
             if (!set.containsKey(s) && !unconfirmed.containsKey(s)) {
                 set.put(s, true);
@@ -86,8 +88,7 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         for (Edge e : results) {
             unconfirmed.remove(e.getFrom());
             set.put(e.getFrom(), true);
-            add(e.getTo());
-            Stats.addManagerOut(e.getTo());
+            addInternal(e.getTo());
             found.add(e);
         }
         Set<String> crawled = new HashSet<>();
@@ -96,7 +97,7 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
             System.out.println(NAME + ": crawled " + s);
         }
         collector.add(found);
-        Stats.addManagerOut(found);
+        //Stats.addManagerOut(found);
     }
 
     @Override

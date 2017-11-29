@@ -40,7 +40,7 @@ public class Worker implements Runnable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }*/
-        System.err.println(NAME + ": checking in with " + currentUrl.get());
+        //System.err.println(NAME + ": checking in with " + currentUrl.get());
         try {
             Stats.addWorkerOut(currentUrl.get());
             workQueue.checkIn(currentUrl.get());
@@ -62,7 +62,7 @@ public class Worker implements Runnable {
             System.out.println(NAME + ": started crawling " + s);
             if (s == null) {
                 try {
-                    Thread.sleep(3 * 1000);
+                    Thread.sleep(5 * 1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
