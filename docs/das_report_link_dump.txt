@@ -24,6 +24,8 @@ http://infolab.stanford.edu/~olston/publications/crawling_survey.pdf
 Deep Web Crawler: Exploring and Re-ranking of Web Forms
 https://pdfs.semanticscholar.org/c9ba/f200e431e78a5df025156aa9f16790defc80.pdf
 
+MINERVA: A Scalable Efficient Peer-to-Peer Search Engine  <- Peter Triantafillou (of DB3 fame) co-authored this paper
+https://pdfs.semanticscholar.org/11b9/c6342cfff6a7e068eba69cd27d5ae80939ba.pdf
 
 Presentations
 
