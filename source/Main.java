@@ -42,5 +42,13 @@ public class Main {
             }
         }
         System.out.println("nodes started");
+
+        try {
+            Thread.sleep(60 * 1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        collector.getEdges().keySet().forEach(System.out::println);
+        System.out.println(collector.getEdges().keySet().size());
     }
 }

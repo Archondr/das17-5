@@ -67,7 +67,7 @@ public class Client implements Runnable {
 
         String host = "localhost";
         String managerName = "first";
-        managerName = "second";
+        //managerName = "second";
         int threadNumber = 1;
         //threadNumber = 2;
 
