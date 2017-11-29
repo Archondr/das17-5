@@ -32,12 +32,12 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 	/**
 	 * The successor in the ring.
 	 */
-	private AtomicReference<Node<E>> successor;
+	private AtomicReference<Node<E>> successor = new AtomicReference<>();
 	
 	/**
 	 * The predecessor in the ring.
 	 */
-	private AtomicReference<Node<E>> predecessor;
+	private AtomicReference<Node<E>> predecessor = new AtomicReference<>();
 	
 	/**
 	 * The actual storage of values that this node is responsible for.
@@ -277,12 +277,18 @@ public class NodeImpl<E> extends UnicastRemoteObject implements Node<E>, DHT<E> 
 
 	@Override
 	public void enqueueLocal(String s) {
+		//System.err.println("enqueueLocal: " + s);
+		//System.err.println("queue.size() before: " + queue.size());
 		queue.add(s);
+		//System.err.println("queue.size() after: " + queue.size());
 	}
 
 	@Override
 	public String dequeueLocal() {
-		return queue.poll();
+		//System.err.println("queue.size() before: " + queue.size());
+		String ret = queue.poll();
+		//System.err.println("dequeueLocal: " + ret);
+		return ret;
 	}
 	
 	@Override

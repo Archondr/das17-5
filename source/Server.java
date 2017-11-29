@@ -10,6 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
+    private static final int PORT = 1099;
+
+    private Collector collector;
     private NodeImpl<String> node;
     private Set<Edge> edges = new HashSet<>(); // final results
     private HashMap<String, LocalDateTime> unconfirmed = new HashMap<>();
@@ -17,20 +20,42 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public Node<String> getNode() throws RemoteException { return node; }
 
     public Server(String name, Iterable<String> seedUrls) throws RemoteException {
+        Registry registry = init(PORT);
         node = new NodeImpl<>(name);
         seedUrls.forEach(node::enqueue);
         seedUrls.forEach(url -> node.put(url, url));
+        registry.rebind("server " + name, this);
+        System.err.println(Arrays.asList(registry.list()));
     }
 
-    public Server(String name, Registry registry, String other) throws Exception {
-        ServerInterface server = (ServerInterface) registry.lookup("server"+other);
+    public Server(String name, String other) throws Exception {
+        Registry registry = init(PORT);
+        ServerInterface server = (ServerInterface) registry.lookup("server "+other);
         Node<String> node = server.getNode();
         this.node = new NodeImpl<>(name, node);
+        registry.rebind("server " + name, this);
+        System.err.println(Arrays.asList(registry.list()));
+    }
+
+    private Registry init(int port) throws RemoteException {
+        Registry registry;
+        try {
+            registry = LocateRegistry.getRegistry(port);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            registry = LocateRegistry.createRegistry(port);
+        }
+        try {
+            collector = (Collector) registry.lookup("collector");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return registry;
     }
 
     public synchronized String getUrl() {
-        System.err.println("getUrl()");
         String url = node.dequeue();
+        System.err.println("getUrl() " + url);
         if (url != null) {
             unconfirmed.put(url, LocalDateTime.now());
             node.remove(url);
@@ -39,6 +64,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     public synchronized void putEdges(Iterable<Edge> edges) {
+        Set<Edge> uniqueEdges = new HashSet<>();
         edges.forEach(e -> {
             unconfirmed.remove(e.getFrom());
             node.put(e.getFrom(), e.getFrom());
@@ -47,7 +73,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
                 node.put(e.getTo(), e.getTo());
             }
             this.edges.add(e);
+            uniqueEdges.add(e);
         });
+        try {
+            collector.putEdges(new LinkedList<>(uniqueEdges));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public synchronized void clientCheckIn(String url) throws RemoteException {
@@ -86,16 +118,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         try {
             Iterable<String> seedUrls = Arrays.asList("https://www.google.co.uk");
-            Registry registry;
-            try {
-                registry = LocateRegistry.createRegistry(registryPort);
-            } catch (RemoteException ex) {
-                registry = LocateRegistry.getRegistry(registryPort);
-            }
-            Server server = new Server(name, seedUrls);
-            //name = "second"; Server server = new Server(name, registry, "first");
-            registry.rebind("server"+name, server);
-            System.err.println(Arrays.asList(registry.list()));
+            //Server server = new Server(name, seedUrls);
+            name = "second"; Server server = new Server(name, "first");
 
             Runnable moveUnconfirmed = server::moveUnconfirmedToQueue;
             scheduler.scheduleAtFixedRate(moveUnconfirmed, 40, 40, TimeUnit.SECONDS);

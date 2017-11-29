@@ -14,6 +14,24 @@ public class Client implements Runnable {
         stub = server;
     }
 
+    public Client(String name, int threadNumber) {
+        String host = "localhost";
+        try {
+            Registry registry = LocateRegistry.getRegistry(host);
+            ServerInterface stub = (ServerInterface) registry.lookup("server " + name);
+            List<Thread> threads = new LinkedList<>();
+            for (int i = 0; i < threadNumber; ++i) {
+                Thread t = new Thread(new Client(stub));
+                threads.add(t);
+                t.start();
+                System.out.println("thread " + i + " started");
+            }
+        } catch (Exception ex) {
+            System.err.println("Client exception: " + ex.toString());
+            ex.printStackTrace();
+        }
+    }
+
     public void run() {
         try {
             ClientCheckIn clientCheckIn = new ClientCheckIn(stub);
@@ -45,7 +63,7 @@ public class Client implements Runnable {
 
         String host = "localhost";
         String managerName = "first";
-        //managerName = "second";
+        managerName = "second";
         int threadNumber = 1;
         //threadNumber = 2;
 
@@ -59,7 +77,7 @@ public class Client implements Runnable {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerInterface stub = (ServerInterface) registry.lookup("server"+managerName);
+            ServerInterface stub = (ServerInterface) registry.lookup("server "+managerName);
             List<Thread> threads = new LinkedList<>();
             for (int i = 0; i < threadNumber; ++i) {
                 Thread t = new Thread(new Client(stub));
