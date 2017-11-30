@@ -1,0 +1,80 @@
+
+log/10x2x1
+Results(Edges) - 9102
+Results(N) - mIn: 856.3, mOut: 859.2, wIn: 43.8, wOut: 22.15
+Results(Bytes) - mIn: 2.76e+05, mOut: 9.08e+04, wIn: 8.48e+06, wOut: 9.53e+04
+
+log/1x100x1
+Results(Edges) - 13231
+Results(N) - mIn: 756.0, mOut: 770.0, wIn: 13.77, wOut: 7.55
+Results(Bytes) - mIn: 2.66e+06, mOut: 8.07e+04, wIn: 2.22e+06, wOut: 2.66e+04
+
+log/1x10x1
+Results(Edges) - 4930
+Results(N) - mIn: 162.0, mOut: 170.0, wIn: 31.1, wOut: 16.1
+Results(Bytes) - mIn: 9.25e+05, mOut: 1.97e+04, wIn: 8.97e+06, wOut: 9.25e+04
+
+log/1x10x2
+Results(Edges) - 8085
+Results(N) - mIn: 337.0, mOut: 355.0, wIn: 66.3, wOut: 33.6
+Results(Bytes) - mIn: 1.55e+06, mOut: 3.47e+04, wIn: 1.47e+07, wOut: 1.55e+05
+
+log/1x1x20
+Results(Edges) - 10591
+Results(N) - mIn: 482.0, mOut: 499.0, wIn: 940.0, wOut: 481.0
+Results(Bytes) - mIn: 2.07e+06, mOut: 4.97e+04, wIn: 1.75e+08, wOut: 2.07e+06
+
+log/1x20x1
+Results(Edges) - 11571
+Results(N) - mIn: 529.0, mOut: 547.0, wIn: 51.75, wOut: 26.4
+Results(Bytes) - mIn: 2.27e+06, mOut: 5.39e+04, wIn: 9.32e+06, wOut: 1.13e+05
+
+log/1x2x10
+Results(Edges) - 12261
+Results(N) - mIn: 569.0, mOut: 567.0, wIn: 547.5, wOut: 284.0
+Results(Bytes) - mIn: 2.40e+06, mOut: 5.79e+04, wIn: 9.91e+07, wOut: 1.20e+06
+
+log/1x30x1
+Results(Edges) - 8299
+Results(N) - mIn: 412.0, mOut: 439.0, wIn: 26.966667, wOut: 13.7
+Results(Bytes) - mIn: 1.62e+06, mOut: 4.30e+04, wIn: 5.07e+06, wOut: 5.40e+04
+
+log/1x40x1
+Results(Edges) - 12484
+Results(N) - mIn: 584.0, mOut: 622.0, wIn: 28.125, wOut: 14.575
+Results(Bytes) - mIn: 2.47e+06, mOut: 5.92e+04, wIn: 4.48e+06, wOut: 6.18e+04
+
+log/1x50x1
+Results(Edges) - 6122
+Results(N) - mIn: 328.0, mOut: 602.0, wIn: 16.66, wOut: 6.54
+Results(Bytes) - mIn: 1.18e+06, mOut: 3.25e+04, wIn: 2.28e+06, wOut: 2.36e+04
+
+log/1x60x1
+Results(Edges) - 6382
+Results(N) - mIn: 350.0, mOut: 348.0, wIn: 10.366667, wOut: 5.8166666
+Results(Bytes) - mIn: 1.18e+06, mOut: 3.07e+04, wIn: 2.20e+06, wOut: 1.97e+04
+
+log/1x70x1
+Results(Edges) - 13850
+Results(N) - mIn: 735.0, mOut: 803.0, wIn: 20.214285, wOut: 10.485714
+Results(Bytes) - mIn: 2.80e+06, mOut: 7.62e+04, wIn: 2.84e+06, wOut: 4.00e+04
+
+log/1x80x1
+Results(Edges) - 6466
+Results(N) - mIn: 452.0, mOut: 749.0, wIn: 13.5875, wOut: 5.6375
+Results(Bytes) - mIn: 1.25e+06, mOut: 4.56e+04, wIn: 1.96e+06, wOut: 1.56e+04
+
+log/1x90x1
+Results(Edges) - 11869
+Results(N) - mIn: 729.0, mOut: 727.0, wIn: 14.9, wOut: 8.088889
+Results(Bytes) - mIn: 2.47e+06, mOut: 8.06e+04, wIn: 2.54e+06, wOut: 2.75e+04
+
+log/20x1x1
+Results(Edges) - 1258
+Results(N) - mIn: 65.8, mOut: 68.15, wIn: 12.1, wOut: 5.35
+Results(Bytes) - mIn: 1.80e+04, mOut: 6.20e+03, wIn: 2.53e+06, wOut: 1.24e+04
+
+log/2x10x1
+Results(Edges) - 4747
+Results(N) - mIn: 1202.0, mOut: 1248.0, wIn: 21.75, wOut: 9.55
+Results(Bytes) - mIn: 5.48e+05, mOut: 1.14e+05, wIn: 4.38e+06, wOut: 4.43e+04
