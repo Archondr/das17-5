@@ -3,11 +3,18 @@ import java.util.*;
 
 public class Runner {
 
-    private static final int MANAGER_NUMBER = 1000;
-    private static final int WORKERS_PER_MANAGER = 1;
-    private static final int THREADS_PER_WORKER = 1;
+    private static int MANAGER_NUMBER = 1;
+    private static int WORKERS_PER_MANAGER = 1;
+    private static int THREADS_PER_WORKER = 1;
 
     public static void main(String[] args) throws RemoteException {
+
+        if(args.length == 3){
+            MANAGER_NUMBER = Integer.parseInt(args[0]);
+            WORKERS_PER_MANAGER = Integer.parseInt(args[1]);
+            THREADS_PER_WORKER = Integer.parseInt(args[2]);
+        }
+
         System.out.println("" + MANAGER_NUMBER + " * " + WORKERS_PER_MANAGER + " * " + THREADS_PER_WORKER);
         Sink sink = new Sink();
         List<Manager> managers = new ArrayList<>(MANAGER_NUMBER);
@@ -30,13 +37,13 @@ public class Runner {
         managers.get(0).add("https://www.google.co.uk");
         while (true) {
             try {
-                Thread.sleep(300 * 1000);
+                Thread.sleep(30 * 1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
             Set<Edge> edges = sink.getEdges();
             //edges.forEach(System.out::println);
-            System.out.println(edges.size());
+            System.out.println("Results(Edges) - " + edges.size());
             Stats.print(MANAGER_NUMBER, MANAGER_NUMBER * WORKERS_PER_MANAGER);
             System.exit(0);
         }
