@@ -37,13 +37,13 @@ public class Runner {
         managers.get(0).add("https://www.google.co.uk");
         while (true) {
             try {
-                Thread.sleep(300 * 1000);
+                Thread.sleep(30 * 1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
             Set<Edge> edges = sink.getEdges();
             //edges.forEach(System.out::println);
-            System.out.println(edges.size());
+            System.out.println("Results(Edges) - " + edges.size());
             Stats.print(MANAGER_NUMBER, MANAGER_NUMBER * WORKERS_PER_MANAGER);
             System.exit(0);
         }
