@@ -27,6 +27,9 @@ https://pdfs.semanticscholar.org/c9ba/f200e431e78a5df025156aa9f16790defc80.pdf
 MINERVA: A Scalable Efficient Peer-to-Peer Search Engine  <- Peter Triantafillou (of DB3 fame) co-authored this paper
 https://pdfs.semanticscholar.org/11b9/c6342cfff6a7e068eba69cd27d5ae80939ba.pdf
 
+Different categories and models of web crawlers:
+http://www.academia.edu/13980090/The_Issues_and_Challenges_with_the_Web_Crawlers
+
 Presentations
 
 Dist-RIA Crawler: A Distributed Crawler for Rich Internet Applications
