@@ -60,13 +60,21 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
     private void addInternal(String s) throws RemoteException {
         int hashValue = hash(s);
         if (hashValue == ID) {
-            if (!set.containsKey(s) && !unconfirmed.containsKey(s)) {
-                set.put(s, true);
-                queue.add(s);
-            }
+            addLocal(s);
         } else {
-            getPeer(hashValue).add(s);
-            Stats.addManagerOut(s);
+            try {
+                getPeer(hashValue).add(s);
+                Stats.addManagerOut(s);
+            } catch (RemoteException|NullPointerException e) {
+                addLocal(s);
+            }
+        }
+    }
+
+    private void addLocal(String s) {
+        if (!set.containsKey(s) && !unconfirmed.containsKey(s)) {
+            set.put(s, true);
+            queue.add(s);
         }
     }
 
