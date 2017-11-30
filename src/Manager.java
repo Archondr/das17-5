@@ -48,7 +48,7 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         }
         this.collector = collector;
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(this::queueUnconfirmed, 40, 40, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::queueUnconfirmed, 60, 60, TimeUnit.SECONDS);
     }
 
     @Override
