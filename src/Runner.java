@@ -4,7 +4,7 @@ import java.util.*;
 public class Runner {
 
     private static int MANAGER_NUMBER = 1;
-    private static int WORKERS_PER_MANAGER = 1;
+    private static int WORKERS_PER_MANAGER = 100;
     private static int THREADS_PER_WORKER = 1;
 
     public static void main(String[] args) throws RemoteException {
@@ -37,7 +37,7 @@ public class Runner {
         managers.get(0).add("https://www.google.co.uk");
         while (true) {
             try {
-                Thread.sleep(30 * 1000);
+                Thread.sleep(60 * 1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

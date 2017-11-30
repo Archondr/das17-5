@@ -33,13 +33,13 @@ public class Worker implements Runnable {
     }
 
     private void checkIn() {
-        /* some randomization would not hurt otherwise
-        all worker-threads might contact manager at the same time
+        /* some randomization would not hurt otherwise all
+         worker-threads might contact the manager at the same time */
         try {
             Thread.sleep(Math.round(Math.random() * 15 * 1000));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }*/
+        }
         //System.err.println(NAME + ": checking in with " + currentUrl.get());
         try {
             Stats.addWorkerOut(currentUrl.get());
@@ -62,7 +62,9 @@ public class Worker implements Runnable {
             System.out.println(NAME + ": started crawling " + s);
             if (s == null) {
                 try {
+                    // sleep 5-10 seconds
                     Thread.sleep(5 * 1000);
+                    Thread.sleep(Math.round(Math.random() * 5 * 1000));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
