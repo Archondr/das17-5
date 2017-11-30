@@ -22,6 +22,8 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
     private final Map<String, Boolean> set = new ConcurrentHashMap<>();
     private final Deque<String> queue = new ConcurrentLinkedDeque<>();
 
+    private final Map<Edge, Boolean> edges = new ConcurrentHashMap<>();
+
     private final Map<String, LocalDateTime> unconfirmed = new ConcurrentHashMap<>();
 
     public Manager(int n, int id) throws RemoteException {
@@ -104,7 +106,13 @@ public class Manager extends UnicastRemoteObject implements WorkQueue, Peer {
         for (String s : crawled) {
             System.out.println(NAME + ": crawled " + s);
         }
-        collector.add(found);
+        found.forEach(e -> edges.put(e, true));
+        try {
+            collector.add(edges.keySet());
+            edges.clear();
+        } catch (RemoteException e) {
+            // keep found edges locally maybe it will succeed next time
+        }
         //Stats.addManagerOut(found);
     }
 

@@ -42,8 +42,10 @@ public class Worker implements Runnable {
         }
         //System.err.println(NAME + ": checking in with " + currentUrl.get());
         try {
-            Stats.addWorkerOut(currentUrl.get());
-            workQueue.checkIn(currentUrl.get());
+            if (currentUrl.get() != null) {
+                Stats.addWorkerOut(currentUrl.get());
+                workQueue.checkIn(currentUrl.get());
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
