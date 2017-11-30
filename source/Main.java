@@ -53,7 +53,7 @@ public class Main {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        collector.getEdges().keySet().forEach(System.out::println);
-        System.out.println(collector.getEdges().keySet().size());
+        collector.getEdges().forEach(System.out::println);
+        System.out.println(collector.getEdges().size());
     }
 }

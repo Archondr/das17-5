@@ -4,6 +4,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CollectorImpl extends UnicastRemoteObject implements Collector {
@@ -29,12 +30,12 @@ public class CollectorImpl extends UnicastRemoteObject implements Collector {
 
     }
 
-    public Map<Edge, String> getEdges() {
-        return edges;
+    public Set<Edge> getEdges() {
+        return edges.keySet();
     }
 
     @Override
-    public void putEdges(List<Edge> edges) throws RemoteException {
+    public void add(Iterable<Edge> edges) throws RemoteException {
         for (Edge e : edges) {
             this.edges.put(e, "");
         }
@@ -47,7 +48,7 @@ public class CollectorImpl extends UnicastRemoteObject implements Collector {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        collector.getEdges().keySet().forEach(System.out::println);
-        System.out.println(collector.getEdges().keySet().size());
+        collector.getEdges().forEach(System.out::println);
+        System.out.println(collector.getEdges().size());
     }
 }
