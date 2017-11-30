@@ -41,18 +41,12 @@ public class Main {
                 clients.put(s, clientList);
             }
         }
-        System.out.println("nodes started");
         try {
-            Thread.sleep(3 * 1000);
+            Thread.sleep(60 * 1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        GraphGenerator.generate(collector.getEdges().keySet());
-        try {
-            Thread.sleep(57 * 1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        GraphGenerator.generate(collector.getEdges());
         collector.getEdges().forEach(System.out::println);
         System.out.println(collector.getEdges().size());
     }
