@@ -3,8 +3,8 @@ import java.util.*;
 
 public class Runner {
 
-    private static final int MANAGER_NUMBER = 20;
-    private static final int WORKERS_PER_MANAGER = 50;
+    private static final int MANAGER_NUMBER = 1000;
+    private static final int WORKERS_PER_MANAGER = 1;
     private static final int THREADS_PER_WORKER = 1;
 
     public static void main(String[] args) throws RemoteException {
