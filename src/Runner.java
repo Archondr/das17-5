@@ -42,6 +42,7 @@ public class Runner {
                 Thread.currentThread().interrupt();
             }
             Set<Edge> edges = sink.getEdges();
+            // Graph functionality requires the linux utility "graphviz" to be installed
             GraphGenerator.generate(edges);
             System.out.println("Results(Edges) - " + edges.size());
             Stats.print(MANAGER_NUMBER, MANAGER_NUMBER * WORKERS_PER_MANAGER);
