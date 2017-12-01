@@ -42,7 +42,7 @@ public class ExampleGraphviz {
 			
 			// Call the graph
 			Runtime rt = Runtime.getRuntime();
-			Process pr = rt.exec("dot -Tpng file.dot -o graph.png");	
+			Process pr = rt.exec("dot -Tpng file.dot -o graph.png");
 		} catch (Exception e) {
 			System.out.println("Lazy Exception Handling");	
 		}

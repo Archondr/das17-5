@@ -3,13 +3,13 @@ import java.util.*;
 
 public class Runner {
 
-    private static int MANAGER_NUMBER = 100;
+    private static int MANAGER_NUMBER = 1;
     private static int WORKERS_PER_MANAGER = 1;
     private static int THREADS_PER_WORKER = 1;
 
     public static void main(String[] args) throws RemoteException {
 
-        if(args.length == 3){
+        if (args.length == 3) {
             MANAGER_NUMBER = Integer.parseInt(args[0]);
             WORKERS_PER_MANAGER = Integer.parseInt(args[1]);
             THREADS_PER_WORKER = Integer.parseInt(args[2]);
@@ -42,7 +42,7 @@ public class Runner {
                 Thread.currentThread().interrupt();
             }
             Set<Edge> edges = sink.getEdges();
-            //edges.forEach(System.out::println);
+            GraphGenerator.generate(edges);
             System.out.println("Results(Edges) - " + edges.size());
             Stats.print(MANAGER_NUMBER, MANAGER_NUMBER * WORKERS_PER_MANAGER);
             System.exit(0);
